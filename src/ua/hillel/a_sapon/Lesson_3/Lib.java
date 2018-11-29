@@ -1,6 +1,6 @@
 package ua.hillel.a_sapon.Lesson_3;
 
-public class Task4 {
+public class Lib {
     private char underscore_character='_';
     private int underscore_character_counter=0;
     private char space_character=' ';

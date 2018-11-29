@@ -59,8 +59,8 @@ public class Lesson_3 {
                 "__________________________________________";
 
         System.out.println("Initial input for the task 1 was next \n" + task1String);
-        Task4 task4= new Task4();
-        task4.CountSymbols(task1String);
+        Lib lib= new Lib();
+        lib.CountSymbols(task1String);
 
         System.out.println("\n/*---------------------------------2----------------------------------------*/");
         System.out.println("TASK 2. Пользователь вводит целое десятичное число, требуется посчитать кольчиство едениц в двоичном предствлении этого числа.\n" +
@@ -72,8 +72,8 @@ public class Lesson_3 {
         Scanner input = new Scanner(System.in);
         int inputNumber = input.nextInt();
         //input.close();
-        task4.Count_Binaries_with_StringUsage(inputNumber);
-        task4.CountBinaries(inputNumber);
+        lib.Count_Binaries_with_StringUsage(inputNumber);
+        lib.CountBinaries(inputNumber);
 
         System.out.println("\n/*----------------------------------3---------------------------------------*/");
         System.out.println("TASK 3. Реализавать в ItelliJ IDEA. Создать две ветки репозитория. В одной реализовать метод проверки является ли строка палидромом.\n" +
