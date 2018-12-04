@@ -145,6 +145,15 @@ public class Lesson_4 {
 
         System.out.println("Lets see out array");
         Print_out_2dArray(chess_table);
+        /*
+        StringBuffer chess=new StringBuffer();
+        for(int x=0;x<8;x++){
+            for (int y=0;y<8;y++){
+                chess.append(chess_table[y][x]).append(" ");
+            }
+            chess.append("\n");
+        }
+        System.out.println(chess);8*/
 
         System.out.println("Lets verify what is going on with the chess board");
         int marker=3;
