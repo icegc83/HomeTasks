@@ -37,9 +37,27 @@ import java.util.stream.IntStream;
 
 public class Lesson_3 {
 
-    void polyndromeVerifier(String string1)
+    static private boolean polyndromeVerifier(String string_from_user)
     {
+        string_from_user = string_from_user.replaceAll("\\s","");
+        string_from_user = string_from_user.toLowerCase();
+        //char[] string_array=string_from_user.toCharArray();
+        boolean palindrome_verifier = true;
+        int string_length = string_from_user.length();
+        int indx = 0;
+        char ch1;
+        char ch2;
 
+        while ( palindrome_verifier && (indx < (string_length/2+1)) ){
+            ch1=string_from_user.charAt(indx);
+            ch2=string_from_user.charAt(string_length - indx - 1);
+            if( (ch1 - ch2) != 0){
+                palindrome_verifier = false;
+            }
+            indx++;
+        }
+
+        return palindrome_verifier;
     }
 
     public static void main(String[] args) {
@@ -85,26 +103,9 @@ public class Lesson_3 {
         System.out.println("Please specify line which you would like to verify is it a palindrome");
         Scanner stringinput= new Scanner(System.in);
         String string_from_user=stringinput.nextLine();
-        string_from_user=string_from_user.replaceAll("\\s","");
-        string_from_user=string_from_user.toLowerCase();
-        //char[] string_array=string_from_user.toCharArray();
-        boolean palindrome_verifier=true;
-        int string_length=string_from_user.length();
-        int indx=0;
-        char ch1;
-        char ch2;
-        System.out.println(string_from_user);
 
-       while ( palindrome_verifier && (indx < (string_length/2+1)) ){
-           ch1=string_from_user.charAt(indx);
-           ch2=string_from_user.charAt(string_length - indx - 1);
-           if( (ch1 - ch2) != 0){
-                palindrome_verifier = false;
-            }
-           indx++;
-        }
 
-        System.out.println("Result of verification is " + palindrome_verifier);
+        System.out.println("Result of verification is " + polyndromeVerifier(string_from_user));
 
 
         System.out.println("\n/*----------------------------------4---------------------------------------*/");
