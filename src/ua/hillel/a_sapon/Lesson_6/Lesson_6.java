@@ -12,5 +12,8 @@ public class Lesson_6 {
         System.out.println("\n/*---------------------------------1----------------------------------------*/");
         System.out.println("TASK 1. Need to define structure of Hillel and everything related to it with students, teachers, etc ...");
 
+
+
     }
+    // Person -> Employee, Student, Teacher, Visitor
 }
