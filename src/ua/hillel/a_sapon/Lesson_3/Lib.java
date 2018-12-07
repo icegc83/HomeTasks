@@ -40,7 +40,7 @@ public class Lib {
         int counter_one=0;
         int counter_zero=0;
 
-        String bynary_string = Integer.toBinaryString(number);
+        StringBuilder bynary_string = new StringBuilder(Integer.toBinaryString(number));
         for (int i=0;i<bynary_string.length();i++){
             if ('1' == bynary_string.charAt(i) )
                 counter_one += 1;
@@ -58,68 +58,72 @@ public class Lib {
      * @param number - int value for which we would like to count 0 and 1 in binary representation
      */
     public void CountBinaries(int number) {
+
+       StringBuilder bynary_string = new StringBuilder();
+       StringBuilder second_bynary_string;
+
+       int marker=1;
+
+       if (number<0) {
+           number *= (-1);
+           marker = (-1);
+       }
+
+        while (number > 0) {
+            bynary_string.append(number % 2);
+            number >>= 1;
+        }
+
+        bynary_string.reverse();
+
+        if (marker == -1){
+            for(int i=0;i<bynary_string.length();i++){
+                if((bynary_string.charAt(i)-'1') == 0){
+                    bynary_string.setCharAt(i,'0');
+                }
+                else{
+                    bynary_string.setCharAt(i,'1');
+                }
+            }
+
+            marker=0;
+            int pos = bynary_string.length()-1;
+
+            while ( (marker == 0) && (pos > 0) ){
+                if(bynary_string.charAt(pos)-'0' == 1){
+                    bynary_string.setCharAt(pos, '0');
+                }
+                else{
+                    bynary_string.setCharAt(pos,'1');
+                    marker = 1;
+                }
+                pos -= 1;
+            }
+            second_bynary_string = new StringBuilder("1...1" + bynary_string.toString());
+        }
+        else
+        {
+            second_bynary_string = new StringBuilder(bynary_string.toString());
+        }
+
         int counter_one = 0;
         int counter_zero = 0;
-        String bynary_string = "";
-        String second_bynary_string = "";
 
-        if (number >= 0) {
-            while (number != 0) {
-
-                if (1 == number % 2) {
-                    counter_one += 1;
-                    bynary_string += "1";
-                } else {
-                    counter_zero += 1;
-                    bynary_string += "0";
-                }
-
-                number /= 2;
+        for(int i=0;i < second_bynary_string.length(); i++)
+        {
+            if( (second_bynary_string.charAt(i) - '1') == 0)
+            {
+                counter_one += 1;
+            }
+            if( (second_bynary_string.charAt(i) - '0') == 0){
+                counter_zero += 1;
             }
         }
 
-        else {
-
-            String temp_string = "";
-            while (number != 0) {
-
-                if (1 == (number * (-1)) % 2) {
-                    counter_one += 1;
-                    temp_string += "0";
-                } else {
-                    counter_zero += 1;
-                    temp_string += "1";
-                }
-
-                number /= 2;
-            }
-
-
-            int marker = 1;
-            char one = '1';
-
-            for (int i = 0; i < temp_string.length(); i++) {
-                if (((temp_string.charAt(i) - one) == 0) && (marker == 1)) {
-                    bynary_string = bynary_string + "0";
-                } else {
-                    if (marker == 1) {
-                        bynary_string = bynary_string + "1";
-                        marker = 0;
-                    } else {
-                        bynary_string = bynary_string + temp_string.charAt(i);
-                    }
-
-                }
-            }
-        }
-
-        for (int i = 0; i < bynary_string.length(); i++) {
-            second_bynary_string = second_bynary_string + bynary_string.charAt(bynary_string.length() - i - 1);
-        }
 
 
         System.out.println("SECOND METHOD - without Integer.toBinaryString");
-        System.out.printf("In result we have next binary representation " + second_bynary_string + "\n, which contains %d of '1' elements and %d of '0' elements \n\n", counter_one, counter_zero);
+        System.out.printf("In result we have next binary representation " + second_bynary_string + "\n, which contains n+%d of '1' elements and %d of '0' elements \n\n", counter_one, counter_zero);
 
     }
 
