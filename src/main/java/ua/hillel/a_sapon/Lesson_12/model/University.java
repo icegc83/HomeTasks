@@ -39,10 +39,10 @@ public class University {
     @Override
     public String toString() {
         return "University{" +
-                "description='" + description + '\'' +
-                ", teachers=" + teachers +
-                ", students=" + students +
-                ", courses=" + courses +
+                "\ndescription='" + description + '\'' +
+                ", \nteachers=" + teachers +
+                ", \nstudents=" + students +
+                ", \ncourses=" + courses +
                 '}';
     }
 
