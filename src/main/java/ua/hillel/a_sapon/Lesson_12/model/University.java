@@ -80,6 +80,10 @@ public class University {
 
         this.description = description;
 
+        teachers = IntStream.rangeClosed(1, 5)
+                .mapToObj(x -> daoImplTeacher.create(new Teacher())
+                ).collect(Collectors.toList());
+
         tasks = IntStream.rangeClosed(1, 5)
                 .mapToObj(x -> daoImplTask.create(new Task(x, "Task " + x))
                 ).collect(Collectors.toList());
