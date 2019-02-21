@@ -1,8 +1,23 @@
 package ua.hillel.a_sapon.Lesson_14;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.io.IOUtils;
+import ua.hillel.a_sapon.Lesson_12.model.Course;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
@@ -123,8 +138,25 @@ public class IOMain {
         System.out.println("\n--------------------OBJ Stream ---------------------");
         ObjSerialize();
 
+        System.out.println("\n--------------------ioUtils Stream ---------------------");
+        ioUtils();
+        System.out.println("\n--------------------JAXB Stream ---------------------");
+        try {
+            jaxB();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("\n--------------------JACKSON_XML Stream ---------------------");
+        jacksonXml();
+
+        System.out.println("\n--------------------JACKSON_JASON Stream ---------------------");
+        jacksonJSON();
+
         InputStream inputStream = System.in;
         OutputStream outputStream = System.out;
+
+
 
     }
 
@@ -331,19 +363,21 @@ public class IOMain {
 
     private static void ObjSerialize() throws IOException
     {
+
+        System.out.println("WRITING Object");
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(
                 new FileOutputStream( "C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\objectSerializable.dat")
         );
 
-        Car obj = new Car(1, List.of( new Weel(15), new Weel(15), new Weel(15), new Weel(15), new Weel(18) ));
+        TeslaCar obj = new TeslaCar(1, List.of( new Weel(15), new Weel(15), new Weel(15), new Weel(15), new Weel(18) ));
         System.out.println(obj);
         objectOutputStream.writeObject(obj);
-        System.out.println("WRITING Object");
 
         objectOutputStream.flush();
         objectOutputStream.close();
 
 
+        System.out.println("READING Object");
         Object object = null;
         ObjectInputStream objectInputStream = new ObjectInputStream(
                 new FileInputStream("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\objectSerializable.dat")
@@ -354,12 +388,68 @@ public class IOMain {
             e.printStackTrace();
         }
 
-        System.out.println("READING Object");
+
         System.out.println(object);
 
     }
+
+    private static void ioUtils() throws IOException{
+        FileInputStream inputStream = new FileInputStream("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\initial.txt");
+        FileOutputStream outputStream = new FileOutputStream("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\ioUtils_Out.txt");
+        BufferedInputStream bufferedInputStream = IOUtils.buffer(inputStream);
+        BufferedOutputStream bufferedOutputStream = IOUtils.buffer(outputStream);
+        IOUtils.copy(inputStream,outputStream);
+
+        String someText = "Something to be added";
+        InputStream inputStringStream = IOUtils.toInputStream( someText, Charset.defaultCharset());
+        IOUtils.copy(inputStringStream, new FileOutputStream("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\ioUtils_Out_2.txt") );
+
+        bufferedOutputStream.flush();
+    }
+
+    private static void jaxB() throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(Car.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        Car newCar = new Car(1);
+
+        marshaller.marshal(newCar, new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\Marshaller.xml"));
+
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Object obj = unmarshaller.unmarshal(new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\Marshaller.xml"));
+        System.out.println(obj);
+        System.out.println("-----initial object------");
+        System.out.println(newCar);
+    }
+
+    private static void jacksonXml() throws IOException{
+
+        XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.registerModule(new JavaTimeModule());
+        xmlMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        Car car = new Car(1);
+
+        xmlMapper.writeValue(new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\XMLJackson.xml"), car);
+        Car car1 = xmlMapper.readValue(new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\XMLJackson.xml"), Car.class);
+        System.out.println(car1);
+
+    }
+
+    private static void jacksonJSON() throws IOException{
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        Car car = new Car(1);
+
+        objectMapper.writeValue(new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\JSONJackson.txt"), car);
+        Car car1 = objectMapper.readValue(new File("C:\\Users\\HYS\\IdeaProjects\\HomeTasks\\src\\main\\java\\ua\\hillel\\a_sapon\\Lesson_14\\resources\\JSONJackson.txt"), Car.class);
+        System.out.println(car1);
+
+    }
+
 }
 
+@XmlRootElement
  class Car implements Serializable{ // if class is realized inside other method with static it will ba called Inner or Nested class
 
     int id;
@@ -370,25 +460,47 @@ public class IOMain {
 
      public Car() {
          this.id = 0;
-         this.weels = List.of( new Weel(1), new Weel(1));
+         this.weels =  new ArrayList<>(List.of( new Weel(1), new Weel(1)));
      }
 
-     public Car(int id, List<Weel> weels) {
+    public Car(int id) {
+         this();
+        this.id = id;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", weels=" + weels +
+                '}';
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setWeels(List<Weel> weels) {
+        this.weels = weels;
+    }
+
+    public Car(int id, List<Weel> weels) {
          this.id = id;
          this.weels = weels;
      }
 
-     @Override
-     public String toString() {
-         return "Car{" +
-                 "id=" + id +
-                 ", weels=" + weels +
-                 '}';
-     }
+    public int getId() {
+        return id;
+    }
 
- }
+    public List<Weel> getWeels() {
+        return weels;
+    }
+}
 
-class Weel implements Serializable, Externalizable{
+class Weel implements Serializable, Externalizable
+{
 
     double radius;
     double width;
@@ -406,6 +518,18 @@ class Weel implements Serializable, Externalizable{
         this.vendor = "BLIZZLIKE";
     }
 
+    public double getRadius() {
+        return radius;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
     @Override
     public String toString() {
         return "Weel{" +
@@ -417,8 +541,6 @@ class Weel implements Serializable, Externalizable{
         out.writeDouble(this.radius);
         out.writeDouble(this.width);
         out.writeUTF(this.vendor);
-        //out.flush();
-        //out.close();
     }
 
     @Override
@@ -430,12 +552,32 @@ class Weel implements Serializable, Externalizable{
         width = integer1;
         vendor = string;
         System.out.println("readExternal RADIUS: " + radius + " WIDTH: " + width + " VENDOR:" + vendor );
-        //in.close();
     }
+
+    public void writeObject(ObjectOutput out) throws IOException {
+        out.writeDouble(this.radius);
+        out.writeDouble(this.width);
+        out.writeUTF(this.vendor);
+    }
+
+    public void readObject(ObjectInput in) throws IOException, ClassNotFoundException {
+        double integer = in.readDouble();
+        double integer1 = in.readDouble();
+        String string = in.readUTF();
+        radius = integer;
+        width = integer1;
+        vendor = string;
+        System.out.println("readExternal RADIUS: " + radius + " WIDTH: " + width + " VENDOR:" + vendor );
+    }
+
 
 }
 
-class TeslaCar extends Car implements Serializable {
+class TeslaCar extends Car implements Serializable, Cloneable {
+
+    public TeslaCar(int i, List<Weel> weels) {
+        new Car(i,weels);
+    }
     // if Car wont be implementing Serializable then TeslaCar will miss all description
 
     @Override
@@ -444,6 +586,12 @@ class TeslaCar extends Car implements Serializable {
                 "id=" + id +
                 ", weels=" + weels +
                 '}';
+    }
+
+    //shellow COPY
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
 

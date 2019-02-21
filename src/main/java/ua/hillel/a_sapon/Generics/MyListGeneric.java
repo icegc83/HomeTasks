@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.Iterator;
 import java.util.function.*;
 
-public class MyList<E> implements Collection<E> {
+public class MyListGeneric<E> implements Collection<E> {
 
         private Node<E> head;
 
@@ -132,7 +132,4 @@ public class MyList<E> implements Collection<E> {
                 consumer.accept(node.value);
             }
         }
-
-
-
 }
