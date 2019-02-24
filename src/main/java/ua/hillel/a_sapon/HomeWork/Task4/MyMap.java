@@ -1,27 +1,23 @@
 package ua.hillel.a_sapon.HomeWork.Task4;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
-public class MyMap<E> implements Collection {
+public class MyMap<E,K> implements Map {
 
-    private Node<E> head;
     private int hashArraySize;
-    private ArrayList<Node> [] hashArrayList;
+    private ArrayList<Node>[] hashArrayList;
 
-    private static class Node<T>{
-        private T value;
-        private T key;
+    private static class Node<K,E>{
+        private K key;
+        private E value;
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Node<?> node = (Node<?>) o;
-            return Objects.equals(value, node.value) &&
-                    Objects.equals(key, node.key);
+            Node<?, ?> node = (Node<?, ?>) o;
+            return key.equals(node.key) &&
+                    value.equals(node.value);
         }
 
         @Override
@@ -29,7 +25,7 @@ public class MyMap<E> implements Collection {
             return Objects.hash(key);
         }
 
-        public Node(T value, T key) {
+        public Node(K key, E value) {
             this.value = value;
             this.key = key;
         }
@@ -37,25 +33,25 @@ public class MyMap<E> implements Collection {
         @Override
         public String toString() {
             return "Node{" +
-                    "value=" + value +
-                    ", key=" + key +
+                    "key=" + key +
+                    ", value=" + value +
                     '}';
         }
 
-        public void setValue(T value) {
-            this.value = value;
+        public K getKey() {
+            return key;
         }
 
-        public void setKey(T key) {
+        public void setKey(K key) {
             this.key = key;
         }
 
-        public T getValue() {
+        public E getValue() {
             return value;
         }
 
-        public T getKey() {
-            return key;
+        public void setValue(E value) {
+            this.value = value;
         }
     }
 
@@ -65,14 +61,13 @@ public class MyMap<E> implements Collection {
 
     public MyMap(int hashArraySize) {
         this.hashArraySize = hashArraySize;
-        this.head = null;
         hashArrayList = new ArrayList[hashArraySize];
     }
 
     public MyMap(E[] array)  {
         this(1000);
         for(E e : array) {
-            this.add(e);
+            this.put(e,e);
         }
     }
 
@@ -83,9 +78,13 @@ public class MyMap<E> implements Collection {
     public int size() {
         int counter =0;
         for (int i=0;i<hashArrayList.length;i++){
-            if(hashArrayList[i].size() > 0) {++counter;}
+            if( (hashArrayList[i] != null) && (hashArrayList[i].size() > 0) ) {
+                for(Node node : hashArrayList[i]){
+                    ++counter;
+                }
+            }
         }
-        return 0;
+        return counter;
     }
 
     /**
@@ -93,149 +92,125 @@ public class MyMap<E> implements Collection {
      */
     @Override
     public boolean isEmpty() {
-        return (this.size()>0);
+        return !(this.size()>0);
     }
 
     /**
-     * Returns {@code true} if this collection contains the specified element.
-     * More formally, returns {@code true} if and only if this collection
-     * contains at least one element {@code e} such that
-     * {@code Objects.equals(o, e)}.
+     * Returns {@code true} if this collection contains the specified key.
      * @return {@code true} if this collection contains the specified
-     *         element
+     *         key
      */
     @Override
-    public boolean contains(Object o) {
-        for(int i=0;i<hashArrayList.length;i++){
-            for(Node node: hashArrayList[i]){
-                if( node.getValue().equals(o) ){return true;}
-                else {}
-            }
-        }return false;
-    }
+    public boolean containsKey(Object key) {
+        if(key != null){
+            int hash = key.hashCode();
+            int pointer = hash % hashArrayList.length;
 
-    public boolean contains(Object o, Object k) {
-        int hash = k.hashCode();
-        int pointer = hash % hashArrayList.length;
-        if(hashArrayList[pointer].size() > 0) {
-            for (Node node : hashArrayList[pointer]) {
-                if (node.getValue().equals(o)) {
-                    return true;
-                } else {
+            if( (hashArrayList[pointer] != null) && (hashArrayList[pointer].size() > 0 ) ){
+                for(Node node : hashArrayList[pointer]){
+                    if(node.key.equals(key)){
+                        return true;
+                    }
+                    else{
+                    }
                 }
             }
+            else{}
+        }
+        else{
         }
         return false;
     }
 
     /**
-     * Returns an iterator over the elements in this collection.  There are no
-     * guarantees concerning the order in which the elements are returned
-     * (unless this collection is an instance of some class that provides a
-     * guarantee).
+     * Returns {@code true} if this map maps one or more keys to the
+     * specified value.
      *
-     * @return an {@code Iterator} over the elements in this collection
      */
     @Override
-    public Iterator iterator() {
-        return new Iterator() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public Object next() {
-                return null;
-            }
-        };
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection.
-     * If this collection makes any guarantees as to what order its elements
-     * are returned by its iterator, this method must return the elements in
-     * the same order. The returned array's {@linkplain Class#getComponentType
-     * runtime component type} is {@code Object}.
-     */
-    @Override
-    public Object[] toArray() {
-        ArrayList resultArraylist = new ArrayList();
-        for (int i=0;i<hashArrayList.length;i++){
-            if(hashArrayList[i].size()>0){
-                resultArraylist.addAll(hashArrayList[i]);
-            }
-            else{
-            }
-        }
-        return resultArraylist.toArray();
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection;
-     * the runtime type of the returned array is that of the specified array.
-     * If the collection fits in the specified array, it is returned therein.
-     * Otherwise, a new array is allocated with the runtime type of the
-     * specified array and the size of this collection.
-     */
-    @Override
-    public boolean add(Object o) {
-        if(o != null) {
-            add(o,o);
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection;
-     * the runtime type of the returned array is that of the specified array.
-     * If the collection fits in the specified array, it is returned therein.
-     * Otherwise, a new array is allocated with the runtime type of the
-     * specified array and the size of this collection.
-     */
-    public boolean add(Object o, Object k) {
-        if( o != null){
-               Node<E> node = new Node<E>((E)o,(E)k);
-               int hash = k.hashCode();
-               int pointer = (int)(hash % hashArrayList.length);
-               if(hashArrayList[pointer].size() > 0){
-                    for(Node n : hashArrayList[pointer]){
-                        if ( n.equals(node) ){ return true;}
-                        else{//bellow
-                        }
-                    }
-               }
-               else{
-                   //bellow
-               }
-               hashArrayList[pointer].add(node);
-               return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    /**
-     * Removes a single instance of the specified element from this
-     * collection
-     */
-    @Override
-    public boolean remove(Object o) {
-        if(o != null) {
-            for (int i = 0; i < hashArrayList.length; i++) {
-                if(hashArrayList[i].size()>0){
+    public boolean containsValue(Object value) {
+        if( value != null ){
+            int i=0;
+            while( i < hashArraySize ){
+                if( (hashArrayList[i] != null) && (hashArrayList[i].size() > 0 ) ){
                     for(Node node : hashArrayList[i]){
-                        if(hashArrayList[i].contains(o)){
-                            hashArrayList[i].remove(o);
+                        if(node.value.equals(value)){
                             return true;
+                        }
+                        else{
                         }
                     }
                 }
+                i++;
             }
+        }
+        else{
+        }
+        return false;
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped,
+     * or {@code null} if this map contains no mapping for the key.
+     */
+    @Override
+    public Object get(Object key) {
+        int hash = key.hashCode();
+        int pointer = hash % hashArrayList.length;
+        if ( (hashArrayList[pointer] != null) && (hashArrayList[pointer].size() > 0 ) ){
+            return hashArrayList[pointer].get(0);
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Associates the specified value with the specified key in this map
+     * (optional operation).  If the map previously contained a mapping for
+     * the key, the old value is added as second one with the same key.
+     * @return
+     */
+    @Override
+    public Object put(Object key, Object value) {
+        if( (key != null) && (value != null) ){
+            Node<K,E> node = new Node<K,E>((K)key,(E)value);
+            int hash = key.hashCode();
+            int pointer = (int)(hash % hashArrayList.length);
+            if( (hashArrayList[pointer] != null) && (hashArrayList[pointer].size() ) > 0){
+                hashArrayList[pointer].add(node);
+                return hashArrayList[pointer].get(hashArrayList[pointer].size()-1);
+            }
+            else{
+            }
+            hashArrayList[pointer] = new ArrayList<>();
+            hashArrayList[pointer].add(node);
+            return hashArrayList[pointer].get(hashArrayList[pointer].size()-1);
+        }
+        else{
+            return null;
+        }
+    }
+
+    /**
+     * Removes the mapping for a key from this map if it is present
+     * (optional operation).   More formally, if this map contains a mapping
+     * from key {@code k} to value {@code v} such that
+     * {@code Objects.equals(key, k)}, that mapping
+     * is removed.
+     */
+    @Override
+    public Object remove(Object key) {
+        if(key != null) {
+            int hash = key.hashCode();
+            int pointer = hash % hashArrayList.length;
+            if ( (hashArrayList[pointer] != null) && (hashArrayList[pointer].size() > 0 ) ){
+                hashArrayList[pointer].clear();
+                hashArrayList[pointer] = null;
+            }
+            else {
+            }
+            return true;
         }
         else {
         }
@@ -243,102 +218,125 @@ public class MyMap<E> implements Collection {
     }
 
     /**
-     * Adds all of the elements in the specified collection to this collection
-     * (optional operation).
+     * Copies all of the mappings from the specified map to this map
+     * (optional operation).  The effect of this call is equivalent to that
+     * of calling {@link #put(Object, Object) put(k, v)} on this map once
+     * for each mapping from key {@code k} to value {@code v} in the
+     * specified map.  The behavior of this operation is undefined if the
+     * specified map is modified while the operation is in progress.
      */
     @Override
-    public boolean addAll(Collection c) {
-        if (c != null) {
-            for (Object obj : c) {
-                if( this.add(obj) ){}
-                else{return false;}
+    public void putAll(Map m) {
+        if (m != null){
+            Set keySet = m.keySet();
+            for(Object key : keySet){
+                this.put(key, m.get(key));
             }
-            return true;
         }
         else{
-            return false;
         }
     }
 
     /**
-     * Removes all of the elements from this collection (optional operation).
-     * The collection will be empty after this method returns.
+     * Removes all of the mappings from this map (optional operation).
+     * The map will be empty after this call returns.
      *
      * @throws UnsupportedOperationException if the {@code clear} operation
-     *                                       is not supported by this collection
+     *                                       is not supported by this map
      */
     @Override
     public void clear() {
         for(int i=0;i<hashArrayList.length;i++) {
-            hashArrayList[i].clear();
+            if(hashArrayList[i] != null) {
+                hashArrayList[i].clear();
+                hashArrayList[i] = null;
+            }
         }
-
     }
 
     /**
-     * Retains only the elements in this collection that are contained in the
-     * specified collection (optional operation).  In other words, removes from
-     * this collection all of its elements that are not contained in the
-     * specified collection.
+     * Returns a {@link Set} view of the keys contained in this map.
+     * The set is backed by the map, so changes to the map are
+     * reflected in the set, and vice-versa.
      */
     @Override
-    public boolean retainAll(Collection c) {
-        for(Object obj : c){
-            if(!this.contains(obj)){
-                c.remove(obj);
+    public Set keySet() {
+        Set keySet = new HashSet();
+        for(int i=0;i<hashArrayList.length;i++){
+            if( (hashArrayList[i] != null) && (hashArrayList[i].size() > 0 ) ){
+                for (Node node : hashArrayList[i]){
+                    keySet.add(node.key);
+                }
             }
-            else{}
         }
-        return true;
+        return keySet;
     }
 
     /**
-     * Removes all of this collection's elements that are also contained in the
-     * specified collection (optional operation).  After this call returns,
-     * this collection will contain no elements in common with the specified
-     * collection.
+     * Returns a {@link Collection} view of the values contained in this map.
+     * The collection is backed by the map, so changes to the map are
+     * reflected in the collection, and vice-versa.  If the map is
+     * modified while an iteration over the collection is in progress
+     * (except through the iterator's own {@code remove} operation),
+     * the results of the iteration are undefined.  The collection
+     * supports element removal, which removes the corresponding
+     * mapping from the map, via the {@code Iterator.remove},
+     * {@code Collection.remove}, {@code removeAll},
+     * {@code retainAll} and {@code clear} operations.  It does not
+     * support the {@code add} or {@code addAll} operations.
+     *
+     * @return a collection view of the values contained in this map
      */
     @Override
-    public boolean removeAll(Collection c) {
-        if (c != null) {
-            for (Object obj : c) {
-                this.remove(obj);
+    public Collection values() {
+        Collection valuesList = new ArrayList();
+        for(int i=0;i<hashArrayList.length;i++){
+            if( (hashArrayList[i] != null) && (hashArrayList[i].size() > 0 ) ){
+                for (Node node : hashArrayList[i]){
+                    valuesList.add(node.value);
+                }
             }
-            return true;
+        }
+        return valuesList;
+    }
+
+    /**
+     * Returns a {@link Set} view of the mappings contained in this map.
+     * The set is backed by the map, so changes to the map are
+     * reflected in the set, and vice-versa.  If the map is modified
+     * while an iteration over the set is in progress (except through
+     * the iterator's own {@code remove} operation, or through the
+     * {@code setValue} operation on a map entry returned by the
+     * iterator) the results of the iteration are undefined.
+     */
+    @Override
+    public Set<Entry> entrySet() {
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        if(this.size() >0) {
+            for (int i = 0; i < hashArrayList.length; i++) {
+                if ((hashArrayList[i] != null) && (hashArrayList[i].size() > 0)) {
+                    for (Node node : hashArrayList[i]) {
+                        if (node != null) {
+                            stringBuffer.append(node + " ");
+                        }
+                    }
+                }
+            }
         }
         else{
-            return false;
+            stringBuffer.append("Map is empty");
         }
-    }
+        return stringBuffer.toString();
 
-    /**
-     * Returns {@code true} if this collection contains all of the elements
-     * in the specified collection.
-     * */
-    @Override
-    public boolean containsAll(Collection c) {
-        if (c != null) {
-            for (Object obj : c) {
-                if( this.contains(obj) ){}
-                else{return false;}
-            }
-            return true;
-        }
-        else{
-            return false;
-        }
+//default implementation which we are not going to use
+/*        return "MyMap{" +
+                "hashArraySize=" + hashArraySize +
+                ", hashArrayList=" + Arrays.toString(hashArrayList) +
+                '}';*/
     }
-
-    /**
-     * Returns an array containing all of the elements in this collection;
-     * the runtime type of the returned array is that of the specified array.
-     * If the collection fits in the specified array, it is returned therein.
-     * Otherwise, a new array is allocated with the runtime type of the
-     * specified array and the size of this collection.
-     */
-    @Override
-    public Object[] toArray(Object[] a) {
-        return new Object[0];
-    }
-
 }
